@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { v4 as uuidv4 } from 'uuid';
 import { saveDocument } from '@/lib/storage';
 import { chunkText } from '@/lib/chunks';
 import { MAX_PDF_SIZE_BYTES } from '@/lib/constants';
@@ -117,7 +118,7 @@ export default function HomePage() {
       const { quiz } = await quizRes.json();
 
       // Save to localStorage
-      const id = crypto.randomUUID();
+      const id = uuidv4();
       const chunks = chunkText(documentText);
       const doc: StudyDocument = {
         id,

@@ -21,16 +21,21 @@ export default function QuizPlayer({ quiz }: Props) {
     setAnswers((prev) => ({ ...prev, [id]: { value, submitted: false } }));
   };
 
+  // Short-answer grading: checks if the user's answer contains the first 3 key
+  // words of the correct answer as a best-effort heuristic. Users see the
+  // correct answer when marked wrong so they can self-assess.
+  const isShortAnswerCorrect = (userAnswer: string, correctAnswer: string): boolean => {
+    const keyWords = correctAnswer.trim().toLowerCase().split(' ').slice(0, 3).join(' ');
+    return userAnswer.trim().toLowerCase().includes(keyWords);
+  };
+
   const submitAnswer = (item: QuizItem) => {
     const ans = answers[item.id];
     if (!ans) return;
-    // Short-answer grading uses a simple substring match on the first 3 answer
-    // words as a best-effort heuristic. Users are shown the correct answer when
-    // marked incorrect so they can self-assess.
     const correct =
       item.type === 'mcq'
         ? ans.value.trim().toLowerCase() === item.answer.trim().toLowerCase()
-        : ans.value.trim().toLowerCase().includes(item.answer.trim().toLowerCase().split(' ').slice(0, 3).join(' '));
+        : isShortAnswerCorrect(ans.value, item.answer);
     setAnswers((prev) => ({
       ...prev,
       [item.id]: { ...ans, submitted: true, correct },
