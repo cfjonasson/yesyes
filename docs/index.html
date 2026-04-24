@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Study Summarizer</title>
+  <meta name="description" content="Summarize text and PDFs, create flashcards, quizzes, and study with AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Topbar Navigation -->
+<header id="topbar">
+  <a href="#" class="logo">Study<span>AI</span></a>
+  <nav class="topbar-nav" role="tablist" aria-label="Main navigation">
+    <button class="nav-tab active" data-page="summarize" role="tab" aria-selected="true" title="Summarize">
+      <span class="icon" aria-hidden="true">📝</span><span class="label">Summarize</span>
+    </button>
+    <button class="nav-tab" data-page="study" role="tab" aria-selected="false" title="Study">
+      <span class="icon" aria-hidden="true">🎓</span><span class="label">Study</span>
+    </button>
+    <button class="nav-tab" data-page="chat" role="tab" aria-selected="false" title="Chat">
+      <span class="icon" aria-hidden="true">💬</span><span class="label">Chat</span>
+    </button>
+    <button class="nav-tab" data-page="library" role="tab" aria-selected="false" title="Library">
+      <span class="icon" aria-hidden="true">📚</span><span class="label">Library</span>
+    </button>
+    <button class="nav-tab" data-page="settings" role="tab" aria-selected="false" title="Settings">
+      <span class="icon" aria-hidden="true">⚙️</span><span class="label">Settings</span>
+    </button>
+  </nav>
+</header>
+
+<main id="app">
+
+  <!-- ========== SUMMARIZE PAGE ========== -->
+  <section class="page active" id="page-summarize" role="tabpanel">
+    <div class="page-inner">
+      <h1 class="page-title">Summarize</h1>
+      <p class="page-subtitle">Paste text or upload a PDF to get an AI-powered summary.</p>
+
+      <!-- Input card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📄 Input</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-ghost btn-sm" id="btn-clear-input" title="Clear input">✕ Clear</button>
+          </div>
+        </div>
+
+        <!-- PDF Drop Zone -->
+        <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Drop PDF or click to upload">
+          <input type="file" id="file-input" accept=".pdf" aria-label="Upload PDF file" />
+          <div class="dz-icon">📎</div>
+          <div class="dz-label">Drop a PDF here or click to upload</div>
+          <div class="dz-hint">PDF text is extracted in-browser — nothing is uploaded</div>
+        </div>
+
+        <div id="pdf-status" class="hidden"></div>
+
+        <div class="divider"></div>
+
+        <!-- Text area -->
+        <div class="field">
+          <label for="input-text">Or paste text</label>
+          <textarea id="input-text" placeholder="Paste your article, notes, or document text here…" rows="8"></textarea>
+        </div>
+
+        <!-- Controls -->
+        <div class="input-row">
+          <div class="field">
+            <label>Summary length</label>
+            <div class="seg-group" id="length-group" role="group" aria-label="Summary length">
+              <button class="seg-btn" data-value="short">Short</button>
+              <button class="seg-btn active" data-value="medium">Medium</button>
+              <button class="seg-btn" data-value="long">Long</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Output style</label>
+            <div class="seg-group" id="style-group" role="group" aria-label="Output style">
+              <button class="seg-btn active" data-value="bullets">Bullets</button>
+              <button class="seg-btn" data-value="paragraph">Paragraph</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary btn-lg" id="btn-summarize">
+            <span class="btn-label">✨ Summarize</span>
+          </button>
+          <button class="btn btn-secondary" id="btn-save-doc" title="Save document to library">
+            💾 Save to Library
+          </button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="result-area hidden" id="result-area">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📋 Result</span>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-ghost btn-sm" id="btn-copy-summary" title="Copy summary">Copy</button>
+              <button class="btn btn-ghost btn-sm" id="btn-save-summary" title="Save summary to library">Save</button>
+            </div>
+          </div>
+          <div id="summary-output" class="result-text"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STUDY PAGE ========== -->
+  <section class="page" id="page-study" role="tabpanel">
+    <div class="page-inner">
+      <h1 class="page-title">Study</h1>
+      <p class="page-subtitle">Generate flashcards and quizzes from your current document or library.</p>
+
+      <!-- Tab bar -->
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-study-tab="flashcards" role="tab">🗂 Flashcards</button>
+        <button class="tab-btn" data-study-tab="quiz" role="tab">❓ Quiz</button>
+      </div>
+
+      <!-- Flashcards tab -->
+      <div class="tab-panel active" id="study-tab-flashcards" role="tabpanel">
+        <div class="btn-row" style="margin-bottom:16px;">
+          <button class="btn btn-primary" id="btn-gen-flashcards">✨ Generate Flashcards</button>
+          <button class="btn btn-secondary" id="btn-reveal-all">👁 Reveal All</button>
+          <button class="btn btn-secondary" id="btn-hide-all">🙈 Hide All</button>
+        </div>
+        <div id="fc-status" class="hidden"></div>
+        <div id="flashcard-grid" class="flashcard-grid"></div>
+        <div id="fc-empty" class="empty-state hidden">
+          <div class="es-icon">🗂</div>
+          <p>No flashcards yet. Generate some from a document above.</p>
+        </div>
+      </div>
+
+      <!-- Quiz tab -->
+      <div class="tab-panel" id="study-tab-quiz" role="tabpanel">
+        <div class="btn-row" style="margin-bottom:16px;">
+          <button class="btn btn-primary" id="btn-gen-quiz">✨ Generate Quiz</button>
+          <button class="btn btn-secondary hidden" id="btn-submit-quiz">✅ Submit & Grade</button>
+          <button class="btn btn-ghost hidden" id="btn-retry-quiz">🔄 Try Again</button>
+        </div>
+        <div id="quiz-status" class="hidden"></div>
+        <div id="quiz-result" class="quiz-result-bar hidden"></div>
+        <div id="quiz-container"></div>
+        <div id="quiz-empty" class="empty-state hidden">
+          <div class="es-icon">❓</div>
+          <p>No quiz yet. Generate one from a document above.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CHAT PAGE ========== -->
+  <section class="page" id="page-chat" role="tabpanel">
+    <div class="page-inner">
+      <h1 class="page-title">Chat with Document</h1>
+      <p class="page-subtitle">Ask questions grounded in your document. Evidence is hidden by default.</p>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="chat-window">
+          <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
+            <div class="chat-msg assistant">
+              <div class="chat-bubble">
+                👋 Hi! I can answer questions about your document. Make sure you've summarized a document first, then ask away.
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <textarea id="chat-input" placeholder="Ask a question about your document…" rows="1" aria-label="Chat message input"></textarea>
+            <button class="btn btn-primary" id="btn-chat-send" aria-label="Send message">
+              <span class="btn-label">Send ↑</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" id="btn-clear-chat">🗑 Clear chat</button>
+        <button class="btn btn-ghost btn-sm" id="btn-save-chat">💾 Save chat history</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== LIBRARY PAGE ========== -->
+  <section class="page" id="page-library" role="tabpanel">
+    <div class="page-inner wide">
+      <h1 class="page-title">Library</h1>
+      <p class="page-subtitle">Saved documents, summaries, flashcard sets, and quizzes.</p>
+
+      <!-- Sub-tabs -->
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-lib-tab="docs" role="tab">📄 Documents</button>
+        <button class="tab-btn" data-lib-tab="summaries" role="tab">📋 Summaries</button>
+        <button class="tab-btn" data-lib-tab="flashcards" role="tab">🗂 Flashcards</button>
+        <button class="tab-btn" data-lib-tab="quizzes" role="tab">❓ Quizzes</button>
+      </div>
+
+      <div class="tab-panel active" id="lib-tab-docs" role="tabpanel">
+        <div id="lib-docs-grid" class="library-grid"></div>
+        <div id="lib-docs-empty" class="empty-state">
+          <div class="es-icon">📄</div>
+          <p>No saved documents yet.</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="lib-tab-summaries" role="tabpanel">
+        <div id="lib-summaries-grid" class="library-grid"></div>
+        <div id="lib-summaries-empty" class="empty-state">
+          <div class="es-icon">📋</div>
+          <p>No saved summaries yet.</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="lib-tab-flashcards" role="tabpanel">
+        <div id="lib-flashcards-grid" class="library-grid"></div>
+        <div id="lib-flashcards-empty" class="empty-state">
+          <div class="es-icon">🗂</div>
+          <p>No saved flashcard sets yet.</p>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="lib-tab-quizzes" role="tabpanel">
+        <div id="lib-quizzes-grid" class="library-grid"></div>
+        <div id="lib-quizzes-empty" class="empty-state">
+          <div class="es-icon">❓</div>
+          <p>No saved quizzes yet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SETTINGS PAGE ========== -->
+  <section class="page" id="page-settings" role="tabpanel">
+    <div class="page-inner">
+      <h1 class="page-title">Settings</h1>
+      <p class="page-subtitle">Configure your backend URL and preferences.</p>
+
+      <div class="card">
+        <div class="settings-section">
+          <h3>Backend</h3>
+          <div class="field">
+            <label for="setting-backend-url">Backend Base URL</label>
+            <input type="url" id="setting-backend-url"
+              placeholder="https://your-worker.your-subdomain.workers.dev" />
+            <p style="font-size:.8rem;margin-top:6px;">
+              The app will call <code>{url}/api/summarize</code>, <code>/api/flashcards</code>,
+              <code>/api/quiz</code>, and <code>/api/chat</code>.
+            </p>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" id="btn-save-settings">💾 Save Settings</button>
+            <button class="btn btn-ghost" id="btn-test-backend">🔌 Test Connection</button>
+          </div>
+          <div id="backend-test-result" class="hidden"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="settings-section">
+          <h3>Data</h3>
+          <p style="font-size:.85rem;margin-bottom:12px;">
+            All data is stored in your browser's LocalStorage. Nothing is sent to any server except your AI backend.
+          </p>
+          <div class="btn-row">
+            <button class="btn btn-danger" id="btn-clear-library">🗑 Clear All Library Data</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="settings-section" style="margin-bottom:0;">
+          <h3>About</h3>
+          <p style="font-size:.85rem;">
+            Study Summarizer — a free, open-source AI-powered study tool.<br/>
+            Runs entirely on GitHub Pages. Your documents stay in your browser.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Toast container -->
+<div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- app.js loads pdf.js dynamically from CDN when a PDF is uploaded -->
+<script src="app.js" type="module"></script>
+
+</body>
+</html>
