@@ -60,7 +60,7 @@ export function scoreChunks(query: string, chunks: TextChunk[], topN = 5): TextC
     for (const t of querySet) {
       if (chunkSet.has(t)) overlap++;
     }
-    const score = overlap / querySet.size;
+    const score = querySet.size > 0 ? overlap / querySet.size : 0;
     return { chunk, score };
   });
 
