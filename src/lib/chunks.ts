@@ -52,7 +52,6 @@ export function scoreChunks(query: string, chunks: TextChunk[], topN = 5): TextC
   if (queryTokens.length === 0) return chunks.slice(0, topN);
 
   const querySet = new Set(queryTokens);
-  if (querySet.size === 0) return chunks.slice(0, topN);
 
   const scored = chunks.map((chunk) => {
     const chunkTokens = tokenize(chunk.text);

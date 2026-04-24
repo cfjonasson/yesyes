@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveDocument } from '@/lib/storage';
 import { chunkText } from '@/lib/chunks';
+import { MAX_PDF_SIZE_BYTES } from '@/lib/constants';
 import type { StudyDocument } from '@/lib/types';
 
 export default function HomePage() {
@@ -26,7 +27,7 @@ export default function HomePage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (f.size > 25 * 1024 * 1024) {
+    if (f.size > MAX_PDF_SIZE_BYTES) {
       setError('File too large. Maximum size is 25MB.');
       return;
     }

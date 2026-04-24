@@ -1,6 +1,7 @@
 export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { MAX_PDF_SIZE_BYTES } from '@/lib/constants';
 
 export async function POST(req: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
-    if (file.size > 25 * 1024 * 1024) {
+    if (file.size > MAX_PDF_SIZE_BYTES) {
       return NextResponse.json({ error: 'File too large. Maximum size is 25MB.' }, { status: 413 });
     }
 

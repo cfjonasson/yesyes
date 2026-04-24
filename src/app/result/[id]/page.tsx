@@ -29,10 +29,10 @@ export default function ResultPage() {
     setDoc(d);
   }, [id, router]);
 
-  const handleUpdateFlashcards = (flashcards: StudyDocument['flashcards']) => {
+  const handleUpdateFlashcards = (updatedFlashcards: StudyDocument['flashcards']) => {
     if (!doc) return;
-    updateDocument(doc.id, { flashcards });
-    setDoc({ ...doc, flashcards });
+    updateDocument(doc.id, { flashcards: updatedFlashcards });
+    setDoc({ ...doc, flashcards: updatedFlashcards });
   };
 
   if (!doc) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOpenAIClient, MODEL } from '@/lib/openai';
+import { MAX_TEXT_CHARS } from '@/lib/constants';
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +20,7 @@ Return ONLY valid JSON array:
 ]
 
 Text:
-${text.slice(0, 12000)}`;
+${text.slice(0, MAX_TEXT_CHARS)}`;
 
     const completion = await openai.chat.completions.create({
       model: MODEL,
