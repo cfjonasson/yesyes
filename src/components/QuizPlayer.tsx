@@ -24,6 +24,9 @@ export default function QuizPlayer({ quiz }: Props) {
   const submitAnswer = (item: QuizItem) => {
     const ans = answers[item.id];
     if (!ans) return;
+    // Short-answer grading uses a simple substring match on the first 3 answer
+    // words as a best-effort heuristic. Users are shown the correct answer when
+    // marked incorrect so they can self-assess.
     const correct =
       item.type === 'mcq'
         ? ans.value.trim().toLowerCase() === item.answer.trim().toLowerCase()

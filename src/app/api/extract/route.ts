@@ -18,6 +18,8 @@ export async function POST(req: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    // pdf-parse uses CommonJS and has dynamic requires internally;
+    // using require() here avoids ESM/CJS interop issues at runtime.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pdfParse = require('pdf-parse');
     const data = await pdfParse(buffer);
