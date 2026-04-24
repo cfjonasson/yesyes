@@ -17,6 +17,12 @@ export default function HomePage() {
   const [step, setStep] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+    setFile(null);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
@@ -148,7 +154,7 @@ export default function HomePage() {
           </label>
           <textarea
             value={text}
-            onChange={(e) => { setText(e.target.value); setFile(null); if (fileRef.current) fileRef.current.value = ''; }}
+            onChange={handleTextChange}
             rows={8}
             placeholder="Paste your study material here..."
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 resize-none"

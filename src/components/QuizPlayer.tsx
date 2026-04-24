@@ -15,7 +15,7 @@ interface Answer {
 
 export default function QuizPlayer({ quiz }: Props) {
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
-  const [showAll, setShowAll] = useState(false);
+  const [showExplanation, setShowExplanation] = useState<Record<string, boolean>>({});
 
   const setAnswer = (id: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [id]: { value, submitted: false } }));
@@ -34,7 +34,7 @@ export default function QuizPlayer({ quiz }: Props) {
     }));
   };
 
-  const reset = () => setAnswers({});
+  const reset = () => { setAnswers({}); setShowExplanation({}); };
 
   const submitted = Object.values(answers).filter((a) => a.submitted);
   const correct = submitted.filter((a) => a.correct).length;
@@ -133,12 +133,12 @@ export default function QuizPlayer({ quiz }: Props) {
                   <p className="mt-1">Correct answer: <span className="font-medium">{item.answer}</span></p>
                 )}
                 <button
-                  onClick={() => setShowAll(!showAll)}
+                  onClick={() => setShowExplanation((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
                   className="mt-1 text-xs underline opacity-70 hover:opacity-100"
                 >
-                  {showAll ? 'Hide' : 'Show'} explanation
+                  {showExplanation[item.id] ? 'Hide' : 'Show'} explanation
                 </button>
-                {showAll && (
+                {showExplanation[item.id] && (
                   <p className="mt-1 text-xs">{item.explanation}</p>
                 )}
               </div>
